@@ -1,3 +1,15 @@
+# Version 3 changes:
+# added doc strings to functions
+# added pause functionality to the report and run_prog loop to enable the user to actually see whats happening
+# added get_user_input detail to enable user to enter name of drink as well as number. It breaks under some conditions..
+# those conditions removed (using cappuccino). See comment get_user_input() line 22, doc line 104.
+
+
+# For future versions
+# Fix cappuccino bug!
+# for future versions: track coinage in and out.
+
+
 def art():
     print("   ., ''''''''''''''''''  ,.")
     print(" .'   .oooooo$$$$$ooooooo. '.")
@@ -61,14 +73,14 @@ def report(drink_resource, funds):
     :param funds: takes in the current total amount of money
     :return: Nil
     """
-    water_level = drink_resource["water"]
-    milk_level = drink_resource["milk"]
-    coffee_level = drink_resource["coffee"]
-    money_level = funds
-    print(f"The water level is: {water_level}")
-    print(f"The milk level is: {milk_level}")
-    print(f"The coffee level is: {coffee_level}")
-    print(f"The total amount of money is: {money_level}")
+    print(f"The water level is: {drink_resource['water']}")
+    print(f"The milk level is: {drink_resource['milk']}")
+    print(f"The coffee level is: {drink_resource['coffee']}")
+    print(f"The total amount of money is: {funds}")
+
+    finished_reading = "no"
+    while finished_reading != 'exit':
+        finished_reading = input("Type 'exit' to exit the report function:\n")
 
 
 def get_user_input():
@@ -91,9 +103,9 @@ def get_user_input():
     # drinks
     elif user_input == "1" or user_input == "espresso":
         return "espresso"
-    elif user_input == "2":
+    elif user_input == "2" or user_input == "latte":
         return "latte"
-    elif user_input == "3":
+    elif user_input == "3":  # for some reason, having cappuccino here causes the programme to crash...
         return "cappuccino"
     else:
         print("error in user selection. Try again.")
@@ -105,7 +117,7 @@ def check_resources(drink):
     Checks if there are sufficient resources to make the required drink. If not then it prints the missing resource(s).
     If sufficient resources, it subtracts the required amount from the total imported from resources dictionary, then
     returns these values.
-    :param drink: takes the user_input drink 
+    :param drink: takes the user_input drink
     :return: True if resources are sufficient, False if not. Also returns new values of coffee, milk and water.
     """
     if drink == "off" or drink == "report":
@@ -132,10 +144,10 @@ def check_resources(drink):
 
 def payment(drink):
     """
-    Takes the users drink choice and uses the global parameter total_money. 
-    Calculates the drink price from the menu dictionary then gets input from user. 
+    Takes the users drink choice and uses the global parameter total_money.
+    Calculates the drink price from the menu dictionary then gets input from user.
     Finally prints the correct amount of change to return to user.
-    :param drink: user choice of drink. Must be from the menu dictionary. 
+    :param drink: user choice of drink. Must be from the menu dictionary.
     :return: returns False if insufficient funds are provided. True if sufficient paymetn received.
     """
     global total_money
@@ -187,6 +199,8 @@ def run_prog():
         resources["coffee"] = 500
         resources["milk"] = 500
         resources["water"] = 1000
+        print("The machine has been refilled.")
+        report(resources, total_money)
     else:
         sufficient_resources = check_resources(user_selection)
         if sufficient_resources[0]:
@@ -196,6 +210,7 @@ def run_prog():
                 resources["milk"] = sufficient_resources[2]
                 resources["water"] = sufficient_resources[3]
                 produce_drink(user_selection)
+    input("Press any key to continue:")
     run_prog()
 
 
