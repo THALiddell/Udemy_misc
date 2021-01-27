@@ -77,7 +77,8 @@ def get_user_input():
     Hidden actions: "off", "report" and "refill"
     :return: returns name of drink, or hidden action.
     """
-    user_input = lower(input("What would you like to drink?\n1 - espresso\n2 - latte\n3 - cappuccino\n Enter your choice: "))
+    user_input = input("What would you like to drink?\n1 - espresso\n2 - latte\n3 - cappuccino\n Enter your choice: ")
+    user_input = user_input.lower()
     # off switch
     if user_input == "off":
         return "off"
