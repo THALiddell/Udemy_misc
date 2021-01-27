@@ -1,0 +1,202 @@
+def art():
+    print("   ., ''''''''''''''''''  ,.")
+    print(" .'   .oooooo$$$$$ooooooo. '.")
+    print("::, $$$$$$$$$$$$$$$$$$$$$$, ',")
+    print("|;  '$$$$$$$$$$$$$$$$$$$$$$'    ''''''''''.")
+    print("|;     ''''''$$$$$'''''''       ,:''''':, |")
+    print("|;   '|                   |'    | |      | |")
+    print("|;   '|                   |'    | |      | |")
+    print("|;   '|                   |'    | |      | |")
+    print("|;   '|                   |'    | |      | |")
+    print("|;   '|                   |'    ':.....:'  |")
+    print(";    '|                   |',, , , , , , ,,'")
+    print("|;   '|                   |'   ;")
+    print("|;.   |                   |   .'")
+    print("'||,,,                   ,,,;'")
+    print("    ''';;;;,,,,,,,,,,,;;;;'''")
+    print("          '''''''''''")
+
+
+MENU = {
+    "espresso": {
+        "ingredients": {
+            "water": 50,
+            "milk": 0,
+            "coffee": 18,
+        },
+        "cost": 1.5,
+    },
+    "latte": {
+        "ingredients": {
+            "water": 200,
+            "milk": 150,
+            "coffee": 24,
+        },
+        "cost": 2.5,
+    },
+    "cappuccino": {
+        "ingredients": {
+            "water": 250,
+            "milk": 100,
+            "coffee": 24,
+        },
+        "cost": 3.0,
+    }
+}
+
+resources = {
+    "water": 1000,
+    "milk": 500,
+    "coffee": 500,
+}
+
+total_money = 0
+cont_prog = True
+
+
+def report(drink_resource, funds):
+    """
+    Prints the current resources available to the machine.
+    :param drink_resource: takes in currently available drink resources
+    :param funds: takes in the current total amount of money
+    :return: Nil
+    """
+    water_level = drink_resource["water"]
+    milk_level = drink_resource["milk"]
+    coffee_level = drink_resource["coffee"]
+    money_level = funds
+    print(f"The water level is: {water_level}")
+    print(f"The milk level is: {milk_level}")
+    print(f"The coffee level is: {coffee_level}")
+    print(f"The total amount of money is: {money_level}")
+
+
+def get_user_input():
+    """
+    User inputs desired drink
+    Hidden actions: "off", "report" and "refill"
+    :return: returns name of drink, or hidden action.
+    """
+    user_input = lower(input("What would you like to drink?\n1 - espresso\n2 - latte\n3 - cappuccino\n Enter your choice: "))
+    # off switch
+    if user_input == "off":
+        return "off"
+    # report function
+    elif user_input == "report":
+        return "report"
+    # refill function
+    elif user_input == "refill":
+        return "refill"
+    # drinks
+    elif user_input == "1" or user_input == "espresso":
+        return "espresso"
+    elif user_input == "2":
+        return "latte"
+    elif user_input == "3":
+        return "cappuccino"
+    else:
+        print("error in user selection. Try again.")
+        get_user_input()
+
+
+def check_resources(drink):
+    """
+    Checks if there are sufficient resources to make the required drink. If not then it prints the missing resource(s).
+    If sufficient resources, it subtracts the required amount from the total imported from resources dictionary, then
+    returns these values.
+    :param drink: takes the user_input drink 
+    :return: True if resources are sufficient, False if not. Also returns new values of coffee, milk and water.
+    """
+    if drink == "off" or drink == "report":
+        return
+    else:
+        able_to_make = False
+        coffee = resources["coffee"]
+        milk = resources["milk"]
+        water = resources["water"]
+
+        if MENU[drink]["ingredients"]["water"] > water:
+            print("Insufficient Water.")
+        elif MENU[drink]["ingredients"]["milk"] > milk:
+            print("Insufficient milk.")
+        elif MENU[drink]["ingredients"]["coffee"] > coffee:
+            print("Insufficient coffee")
+        else:
+            coffee -= MENU[drink]["ingredients"]["coffee"]
+            milk -= MENU[drink]["ingredients"]["milk"]
+            water -= MENU[drink]["ingredients"]["water"]
+            able_to_make = True
+        return able_to_make, coffee, milk, water
+
+
+def payment(drink):
+    """
+    Takes the users drink choice and uses the global parameter total_money. 
+    Calculates the drink price from the menu dictionary then gets input from user. 
+    Finally prints the correct amount of change to return to user.
+    :param drink: user choice of drink. Must be from the menu dictionary. 
+    :return: returns False if insufficient funds are provided. True if sufficient paymetn received.
+    """
+    global total_money
+    drink_cost = MENU[drink]['cost']
+    print(f"{drink} costs {drink_cost}")
+    print("Insert coins. N.B. coppers are not accepted.")
+    user_coins = 0
+    user_coins += 2 * int(input("How many 2 pound coins?"))
+    if user_coins < drink_cost:
+        user_coins += 1 * int(input("How many 1 pound coins?"))
+        if user_coins < drink_cost:
+            user_coins += 0.5 * int(input("How many 50 pence coins?"))
+            if user_coins < drink_cost:
+                user_coins += 0.2 * int(input("How many 20 pence coins?"))
+                if user_coins < drink_cost:
+                    user_coins += 0.1 * int(input("How many 10 pence coins?"))
+                    if user_coins < drink_cost:
+                        user_coins += 0.05 * int(input("How many 5 pence coins?"))
+    print(f"You have paid £{user_coins}.")
+
+    if user_coins < drink_cost:
+        print(f"Insufficient funds. Here is {user_coins} returned.\n")
+        return False
+    elif user_coins == drink_cost:
+        total_money += drink_cost
+        print("Exact change provided. Thank you.\n")
+        return True
+    else:
+        total_money += drink_cost
+        print(f"Here is £{user_coins - drink_cost} change.\n")
+        return True
+
+
+def produce_drink(drink):
+    print(f"Here is your steaming hot cup of {drink}. Thank you.\n")
+
+
+def run_prog():
+    art()
+    global cont_prog
+    user_selection = get_user_input()
+    if user_selection == "report":
+        report(resources, total_money)
+    elif user_selection == "off":
+        print("Shutting down for maintenance")
+        cont_prog = False
+        return cont_prog
+    elif user_selection == "refill":
+        resources["coffee"] = 500
+        resources["milk"] = 500
+        resources["water"] = 1000
+    else:
+        sufficient_resources = check_resources(user_selection)
+        if sufficient_resources[0]:
+            sufficient_funds = payment(user_selection)
+            if sufficient_funds:
+                resources["coffee"] = sufficient_resources[1]
+                resources["milk"] = sufficient_resources[2]
+                resources["water"] = sufficient_resources[3]
+                produce_drink(user_selection)
+    run_prog()
+
+
+while cont_prog is True:
+    run_prog()
